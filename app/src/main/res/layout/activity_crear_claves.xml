@@ -5,10 +5,10 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RecuperarContrasena">
+    tools:context=".CrearClaves">
 
     <ImageView
-        android:id="@+id/imageView_logo"
+        android:id="@+id/imageView_logo_clave"
         android:layout_width="140dp"
         android:layout_height="156dp"
         android:layout_marginTop="32dp"
@@ -18,50 +18,66 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/txt_titulo_recuperar"
+        android:id="@+id/txt_titulo_claves"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="RECUPERAR CONTRASEÑA"
+        android:text="CREAR NUEVA CONTRASEÑA"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView_logo" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView_logo_clave" />
 
     <EditText
-        android:id="@+id/edit_text_email_recuperar"
+        android:id="@+id/edit_text_nueva_clave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:ems="15"
-        android:hint="INGRESE EMAIL"
-        android:inputType="textEmailAddress"
+        android:hint="INGRESE NUEVA CLAVE"
+        android:inputType="textPassword"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_titulo_recuperar" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_titulo_claves" />
 
-    <Button
-        android:id="@+id/btn_recuperar_enviar"
+    <EditText
+        android:id="@+id/edit_text_repetir_clave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:backgroundTint="#FF5722"
-        android:text="RECUPERAR"
+        android:layout_marginTop="30dp"
+        android:ems="15"
+        android:hint="REPETIR CLAVE"
+        android:inputType="textPassword"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_text_email_recuperar" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_text_nueva_clave" />
 
-    <TextView
-        android:id="@+id/txt_instruccion_codigo"
+    <Button
+        android:id="@+id/btn_crear_claves"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:text="Un código de recuperación será generado para su email."
-        android:textAlignment="center"
+        android:backgroundTint="#4CAF50"
+        android:text="CREAR CONTRASEÑA"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_recuperar_enviar" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_text_repetir_clave" />
+
+    <TextView
+        android:id="@+id/txt_instruccion_clave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:text="La clave debe ser robusta: 8+ caracteres, Mayús, Minús, Número y Símbolo."
+        android:textAlignment="center"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_crear_claves" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

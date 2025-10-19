@@ -5,10 +5,10 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RecuperarContrasena">
+    tools:context=".IngresarCodigo">
 
     <ImageView
-        android:id="@+id/imageView_logo"
+        android:id="@+id/imageView_logo_codigo"
         android:layout_width="140dp"
         android:layout_height="156dp"
         android:layout_marginTop="32dp"
@@ -18,50 +18,52 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/txt_titulo_recuperar"
+        android:id="@+id/txt_titulo_codigo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="RECUPERAR CONTRASEÑA"
+        android:text="INGRESE CÓDIGO"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView_logo" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView_logo_codigo" />
 
     <EditText
-        android:id="@+id/edit_text_email_recuperar"
+        android:id="@+id/edit_text_codigo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:ems="15"
-        android:hint="INGRESE EMAIL"
-        android:inputType="textEmailAddress"
+        android:ems="8"
+        android:hint="CÓDIGO (5 dígitos)"
+        android:maxLength="5"
+        android:inputType="numberDecimal"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_titulo_recuperar" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_titulo_codigo" />
+
+    <TextView
+        android:id="@+id/txt_temporizador"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="59 Segundos"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_text_codigo" />
 
     <Button
-        android:id="@+id/btn_recuperar_enviar"
+        android:id="@+id/btn_validar_codigo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:backgroundTint="#FF5722"
-        android:text="RECUPERAR"
+        android:backgroundTint="#009688"
+        android:text="VALIDAR CÓDIGO"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_text_email_recuperar" />
-
-    <TextView
-        android:id="@+id/txt_instruccion_codigo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:text="Un código de recuperación será generado para su email."
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_recuperar_enviar" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_temporizador" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

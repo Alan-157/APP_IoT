@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import cn.pedant.SweetAlert.SweetAlertDialog
-import android.util.Patterns // Importado para validar el formato de email
+import android.util.Patterns
 
 // Variables globales declaradas fuera de la clase
 lateinit var nombre: EditText
@@ -23,9 +23,8 @@ lateinit var btn_reg: Button
 
 class Registro : AppCompatActivity() {
 
-    // Función de validación de robustez (Punto 59: >=8, Mayús, Minús, Número, Especial)
+    // Función de validación de robustez
     private fun isPasswordRobust(password: String): Boolean {
-        // Expresión regular para 8+ caracteres, Mayús, Minús, Número y Carácter Especial
         val passwordPattern = Regex("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^a-zA-Z0-9]).{8,}$")
         return passwordPattern.matches(password)
     }
@@ -67,6 +66,9 @@ class Registro : AppCompatActivity() {
             val claveText = clave.text.toString().trim()
             val repiteText = clave_repite.text.toString().trim()
 
+            // NORMALIZACIÓN: Convertimos a minúsculas antes de validar unicidad
+            val normalizedEmail = emailText.toLowerCase()
+
             val helper = ConexionDbHelper(this)
 
             if (nombreText.isBlank() || apellidoText.isBlank() ||
@@ -78,10 +80,10 @@ class Registro : AppCompatActivity() {
                 mostrarAdvertencia("Contraseña No Coincide", "Las contraseñas ingresadas no coinciden.")
             } else if (!isPasswordRobust(claveText)) {
                 mostrarAdvertencia("Contraseña Débil", "La clave debe tener al menos 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial.")
-            } else if (helper.checkEmailExists(emailText)) {
+            } else if (helper.checkEmailExists(normalizedEmail)) { // Usamos email normalizado
                 mostrarAdvertencia("Email Duplicado", "El E-mail ingresado ya se encuentra registrado.")
             } else {
-                guardar(nombreText, apellidoText, emailText, claveText)
+                guardar(nombreText, apellidoText, normalizedEmail, claveText) // Pasamos email normalizado
             }
         }
     }
@@ -93,12 +95,11 @@ class Registro : AppCompatActivity() {
             val datos = ContentValues().apply {
                 put("Nombre", nom)
                 put("Apellido", ape)
-                put("Email", mai)
+                put("Email", mai) // El email ya está normalizado (en minúsculas)
                 put("Clave", cla)
             }
             db.insert("USUARIOS", null, datos)
 
-            // SweetAlert de éxito y redirigir a Login (MainActivity) - Punto 59
             SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
                 .setTitleText("¡Registro Exitoso!")
                 .setContentText("El usuario ha sido registrado. Inicie sesión.")

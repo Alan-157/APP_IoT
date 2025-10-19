@@ -1,5 +1,6 @@
 package com.example.app
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -74,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         btnRegistrarse = findViewById(R.id.btnRegistrarse)
         btnRecuperar = findViewById(R.id.btnRecuperar)
 
-        // 2. Lógica del Botón Ingresar (Asegura la autenticación local)
+        // 2. Lógica del Botón Ingresar (Autenticación Local)
         btnIngresar.setOnClickListener {
             val emailText = txtEmail.text.toString().trim()
             val claveText = txtClave.text.toString().trim()
@@ -102,24 +103,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // NUEVA FUNCIÓN: Autenticación local contra SQLite
+    // FUNCIÓN MODIFICADA: Autenticación local contra SQLite y guarda datos del usuario
     private fun checkCredentialsLocal(email: String, clave: String) {
         val helper = ConexionDbHelper(this)
-        val db = helper.readableDatabase
 
-        // Consulta la base de datos para ver si existe un usuario con ese email y clave
-        val sql = "SELECT COUNT(*) FROM USUARIOS WHERE EMAIL = ? AND CLAVE = ?"
-        val cursor = db.rawQuery(sql, arrayOf(email, clave))
+        // Obtener datos del usuario (la función getUserData se encarga de la normalización)
+        val userData = helper.getUserData(email, clave)
 
-        var count = 0
-        if (cursor.moveToFirst()) {
-            count = cursor.getInt(0)
-        }
-        cursor.close()
-        db.close()
+        if (userData != null) {
+            // LOGIN EXITOSO: Guardar datos en SharedPreferences
+            val sharedPref = getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+            with (sharedPref.edit()) {
+                // Guardamos el nombre completo (Nombre + Apellido)
+                putString("LOGGED_IN_NAME", userData["nombre"] + " " + userData["apellido"])
+                putString("LOGGED_IN_EMAIL", userData["email"])
+                putBoolean("IS_LOGGED_IN", true)
+                apply()
+            }
 
-        if (count > 0) {
-            mostrarExito("¡Bienvenido!", "Acceso concedido mediante SQLite.")
+            mostrarExito("¡Bienvenido!", "Acceso concedido.")
         } else {
             mostrarError("Error de Acceso", "Credenciales inválidas. Usuario no encontrado o contraseña incorrecta.")
         }

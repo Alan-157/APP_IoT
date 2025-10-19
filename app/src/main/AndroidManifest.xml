@@ -22,6 +22,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.App">
         <activity
+            android:name=".CrearClaves"
+            android:exported="false" />
+        <activity
+            android:name=".IngresarCodigo"
+            android:exported="false" />
+        <activity
             android:name=".RecuperarContrasena"
             android:exported="false" />
         <activity

@@ -1,5 +1,6 @@
 package com.example.app
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -9,6 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import cn.pedant.SweetAlert.SweetAlertDialog
 import android.util.Patterns
+import java.util.Random
 
 class RecuperarContrasena : AppCompatActivity() {
 
@@ -26,6 +28,11 @@ class RecuperarContrasena : AppCompatActivity() {
             .setConfirmText("Aceptar")
             .setConfirmClickListener { dialog -> dialog.dismissWithAnimation() }
             .show()
+    }
+
+    // Función para generar código de 5 dígitos
+    private fun generateRecoveryCode(): String {
+        return (10000..99999).random().toString()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,9 +56,50 @@ class RecuperarContrasena : AppCompatActivity() {
             } else if (!isValidEmail(emailText)) {
                 mostrarAdvertencia("Formato Inválido", "El formato del email no es correcto.")
             } else {
-                // *** AQUÍ VA LA LÓGICA DE ENVIAR CÓDIGO Y REDIRIGIR A INGRESO DE CÓDIGO ***
-                mostrarAdvertencia("Proceso Pendiente", "Se iniciará la comunicación con el servidor para enviar el código.")
+                processRecoveryRequest(emailText)
             }
+        }
+    }
+
+    private fun processRecoveryRequest(email: String) {
+        val helper = ConexionDbHelper(this)
+
+        // NORMALIZACIÓN: Convertimos el email a minúsculas para la búsqueda y almacenamiento
+        val normalizedEmail = email.toLowerCase()
+
+        // 1. Verificar si el email existe en la BD
+        if (!helper.checkEmailExists(normalizedEmail)) {
+            mostrarAdvertencia("Email no Encontrado", "El email ingresado no está asociado a ninguna cuenta.")
+            return
+        }
+
+        // 2. Generar código y tiempo de expiración (60 segundos)
+        val code = generateRecoveryCode()
+        val expirationTime = System.currentTimeMillis() + 60000
+
+        try {
+            // 3. Guardar el código y el tiempo de expiración en la tabla RECUPERACION (usando email normalizado)
+            helper.saveRecoveryCode(normalizedEmail, code, expirationTime)
+
+            // 4. Notificar éxito (Simulando envío de correo) y redirigir
+            SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+                .setTitleText("Código Enviado (Simulación)")
+                .setContentText("El código ($code) ha sido generado y estará activo por 60 segundos. Ingrese el código para continuar.")
+                .setConfirmText("Continuar")
+                .setConfirmClickListener { dialog ->
+                    dialog.dismissWithAnimation()
+
+                    val intent = Intent(this@RecuperarContrasena, IngresarCodigo::class.java).apply {
+                        // ASEGURAMOS DE PASAR EL EMAIL NORMALIZADO A LA SIGUIENTE ACTIVIDAD
+                        putExtra("EMAIL_RECUPERACION", normalizedEmail)
+                    }
+
+                    startActivity(intent)
+                    finish()
+                }
+                .show()
+        } catch (e: Exception) {
+            mostrarAdvertencia("Error", "No se pudo iniciar el proceso de recuperación.")
         }
     }
 }
