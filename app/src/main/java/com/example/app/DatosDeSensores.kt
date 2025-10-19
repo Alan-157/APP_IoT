@@ -78,6 +78,7 @@ class DatosDeSensores : AppCompatActivity() {
     }
 
     // Función para manejar el hardware de la linterna (Punto 139)
+    // Función para manejar el hardware de la linterna (Punto 139)
     private fun toggleFlashlight() {
         if (isFlashlightOn) {
             turnOffFlashlight()
@@ -93,8 +94,12 @@ class DatosDeSensores : AppCompatActivity() {
             cameraManager.setTorchMode(cameraId, true)
             isFlashlightOn = true
             imagenLinterna.setImageResource(R.drawable.linternaencendida)
+            mostrarAdvertencia("Linterna", "Linterna ENCENDIDA.")
         } catch (e: Exception) {
-            mostrarError("Error de Linterna", "No se pudo encender. Verifique permisos o hardware.")
+            // Manejo explícito de permisos/ausencia de hardware (Punto 139 / 1000)
+            mostrarError("Error de Linterna", "No se pudo encender el flash. Verifique que la aplicación tenga el permiso de CÁMARA o que su dispositivo tenga flash.")
+            isFlashlightOn = false // Asegura que el estado se restablezca en caso de fallo
+            imagenLinterna.setImageResource(R.drawable.linternaapagada)
         }
     }
 
@@ -106,7 +111,8 @@ class DatosDeSensores : AppCompatActivity() {
             isFlashlightOn = false
             imagenLinterna.setImageResource(R.drawable.linternaapagada)
         } catch (e: Exception) {
-            mostrarError("Error de Linterna", "No se pudo apagar. Verifique permisos o hardware.")
+            // En el apagado, solo registramos el error sin cambiar la UI si no es necesario
+            mostrarError("Error de Linterna", "Ocurrió un error al apagar el flash.")
         }
     }
 

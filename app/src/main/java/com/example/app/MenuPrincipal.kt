@@ -14,15 +14,18 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import java.util.Locale
 
-private lateinit var btn1: Button
-private lateinit var btn2: Button
-private lateinit var txtFechaMenu: TextView // Variable para el reloj (ID: txt_fecha_menu)
+// Se renombra btn1 y btn2 para ser más claros, y se añade el tercer botón
+private lateinit var btnCrudUsuario: Button
+private lateinit var btnDatosSensor: Button
+private lateinit var btnDesarrollador: Button
+private lateinit var txtFechaMenu: TextView
 
 class MenuPrincipal : AppCompatActivity() {
 
-    // Función de formato de fecha/hora (dd/MM/yyyy HH:mm:ss, 24h) - Punto 71
+    // Función para obtener la fecha/hora en formato dd/MM/yyyy HH:mm:ss (Punto 71)
     fun fechahora(): String {
         val c: Calendar = Calendar.getInstance()
+        // El formato de 24h es HH (no hh) [cite: 1127]
         val sdf: SimpleDateFormat = SimpleDateFormat("dd/MM/yyyy, HH:mm:ss", Locale.getDefault())
         return sdf.format(c.time)
     }
@@ -45,26 +48,36 @@ class MenuPrincipal : AppCompatActivity() {
             insets
         }
 
-        // Iniciar el reloj
+        // 1. Enlace de vistas
         txtFechaMenu = findViewById(R.id.txt_fecha_menu)
+        btnCrudUsuario = findViewById(R.id.btn_crud_usuario)
+        btnDatosSensor = findViewById(R.id.btn_datos_sensor)
+        btnDesarrollador = findViewById(R.id.btn_desarrollador)
+
+        // 2. Iniciar el reloj (Punto 71)
         Handler(Looper.getMainLooper()).post(refrescarReloj)
 
-        btn1=findViewById(R.id.btn_ing) // REGISTRAR USUARIOS
-        btn2=findViewById(R.id.btn_lis) // LISTAR USUARIOS
+        // 3. Lógica de botones (Punto 1129-1131)
 
-        // Redirección a Registro (El Menú Principal redirige a la Gestión de Usuarios)
-        btn1.setOnClickListener()
+        // Opción 1: CRUD de Usuarios (Redirige a la Gestión/Listado del CRUD)
+        btnCrudUsuario.setOnClickListener()
         {
-            val crud = Intent(this, Registro::class.java)
-            startActivity(crud)
-        }
-
-        // Redirección a Listado
-        btn2.setOnClickListener {
-            val listado = Intent(this, Listado::class.java)
+            // Redirigimos al Activity Listado o al Menu CRUD si lo llegas a crear
+            val listado = Intent(this, CRUD_Usuarios::class.java)
             startActivity(listado)
         }
 
-        // PENDIENTE: Añadir navegación para DATOS SENSOR (DatosDeSensores.kt) y DESARROLLADOR
+        // Opción 2: Ver datos de sensores
+        btnDatosSensor.setOnClickListener {
+            val sensores = Intent(this, DatosDeSensores::class.java)
+            startActivity(sensores)
+        }
+
+        // Opción 3: Datos del desarrollador (PENDIENTE: Crea el Activity 'Desarrollador')
+        btnDesarrollador.setOnClickListener {
+            // Reemplaza 'SwitchAlert' por tu Activity 'Desarrollador' cuando lo crees.
+            val desarrollador = Intent(this, Desarrollador::class.java) // Usamos SwitchAlert como placeholder
+            startActivity(desarrollador)
+        }
     }
 }

@@ -5,62 +5,62 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MenuPrincipal">
+    tools:context=".RecuperarContrasena">
 
     <ImageView
-        android:id="@+id/imageView6"
+        android:id="@+id/imageView_logo"
         android:layout_width="140dp"
         android:layout_height="156dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:src="@drawable/icono"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/txt_fecha_menu"
+        android:id="@+id/txt_titulo_recuperar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Fecha/Hora: --:--:--"
+        android:layout_marginTop="32dp"
+        android:text="RECUPERAR CONTRASEÑA"
         android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView6" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView_logo" />
 
-    <Button
-        android:id="@+id/btn_crud_usuario"
-        android:layout_width="250dp"
+    <EditText
+        android:id="@+id/edit_text_email_recuperar"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:backgroundTint="#E91E63"
-        android:text="CRUD USUARIO"
+        android:ems="15"
+        android:hint="INGRESE EMAIL"
+        android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_fecha_menu" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_titulo_recuperar" />
 
     <Button
-        android:id="@+id/btn_datos_sensor"
-        android:layout_width="250dp"
+        android:id="@+id/btn_recuperar_enviar"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:backgroundTint="#03A9F4"
-        android:text="DATOS SENSOR"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="#FF5722"
+        android:text="RECUPERAR"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_crud_usuario" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_text_email_recuperar" />
 
-    <Button
-        android:id="@+id/btn_desarrollador"
-        android:layout_width="250dp"
+    <TextView
+        android:id="@+id/txt_instruccion_codigo"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:backgroundTint="#4CAF50"
-        android:text="DESARROLLADOR"
+        android:layout_marginTop="40dp"
+        android:text="Un código de recuperación será enviado a su correo."
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_datos_sensor" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_recuperar_enviar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

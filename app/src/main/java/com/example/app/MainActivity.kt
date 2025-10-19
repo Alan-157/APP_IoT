@@ -3,15 +3,60 @@ package com.example.app
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import cn.pedant.SweetAlert.SweetAlertDialog
+import android.util.Patterns
 
-private lateinit var btningresar: Button
-private lateinit var btnRegistrarse: Button // Declaramos la variable para el botón de registro
+// Variables globales para la UI (Campos y Botones)
+private lateinit var txtEmail: EditText
+private lateinit var txtClave: EditText
+private lateinit var btnIngresar: Button
+private lateinit var btnRegistrarse: Button
+private lateinit var btnRecuperar: Button
 
 class MainActivity : AppCompatActivity() {
+
+    // --- Funciones de SweetAlert (Reutilizables) ---
+    private fun mostrarAdvertencia(title: String, content: String) {
+        SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
+            .setTitleText(title)
+            .setContentText(content)
+            .setConfirmText("Aceptar")
+            .setConfirmClickListener { dialog -> dialog.dismissWithAnimation() }
+            .show()
+    }
+
+    private fun mostrarError(title: String, content: String) {
+        SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
+            .setTitleText(title)
+            .setContentText(content)
+            .setConfirmText("Cerrar")
+            .setConfirmClickListener { dialog -> dialog.dismissWithAnimation() }
+            .show()
+    }
+
+    private fun mostrarExito(title: String, content: String) {
+        SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+            .setTitleText(title)
+            .setContentText(content)
+            .setConfirmText("Continuar")
+            .setConfirmClickListener { dialog ->
+                dialog.dismissWithAnimation()
+                val ventana = Intent(this@MainActivity, MenuPrincipal::class.java)
+                startActivity(ventana)
+                finish()
+            }
+            .show()
+    }
+
+    private fun isValidEmail(target: CharSequence?): Boolean {
+        return !target.isNullOrEmpty() && Patterns.EMAIL_ADDRESS.matcher(target).matches()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -22,21 +67,61 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // 1. Enlazar botones
-        btningresar = findViewById(R.id.btningresar)
-        btnRegistrarse = findViewById(R.id.btnRegistrarse) // Enlaza el botón "Registrarse" del XML
+        // 1. Enlazar Vistas
+        txtEmail = findViewById(R.id.editTextTextEmailAddress2)
+        txtClave = findViewById(R.id.editTextTextPassword2)
+        btnIngresar = findViewById(R.id.btningresar)
+        btnRegistrarse = findViewById(R.id.btnRegistrarse)
+        btnRecuperar = findViewById(R.id.btnRecuperar)
 
-        // 2. Lógica para el botón Ingresar (Redirige al menú principal)
-        btningresar.setOnClickListener {
-            // Actualmente redirige a MenuPrincipal, pero deberías implementar la lógica de Login aquí o en Login.kt
-            val intent = Intent(this, MenuPrincipal::class.java)
-            startActivity(intent)
+        // 2. Lógica del Botón Ingresar (Asegura la autenticación local)
+        btnIngresar.setOnClickListener {
+            val emailText = txtEmail.text.toString().trim()
+            val claveText = txtClave.text.toString().trim()
+
+            // Validación de campos
+            if (emailText.isBlank() || claveText.isBlank()) {
+                mostrarAdvertencia("Campos Obligatorios", "Por favor, ingrese su email y contraseña.")
+            } else if (!isValidEmail(emailText)) {
+                mostrarAdvertencia("Formato Inválido", "El formato del email no es correcto.")
+            } else {
+                checkCredentialsLocal(emailText, claveText) // Llama a la autenticación LOCAL
+            }
         }
 
-        // 3. Lógica para el botón Registrarse (Redirige a Registro)
+        // 3. Lógica para Registrarse
         btnRegistrarse.setOnClickListener {
             val registroIntent = Intent(this, Registro::class.java)
             startActivity(registroIntent)
+        }
+
+        // 4. Lógica para Recuperar Contraseña
+        btnRecuperar.setOnClickListener {
+            val intent = Intent(this, RecuperarContrasena::class.java)
+            startActivity(intent)
+        }
+    }
+
+    // NUEVA FUNCIÓN: Autenticación local contra SQLite
+    private fun checkCredentialsLocal(email: String, clave: String) {
+        val helper = ConexionDbHelper(this)
+        val db = helper.readableDatabase
+
+        // Consulta la base de datos para ver si existe un usuario con ese email y clave
+        val sql = "SELECT COUNT(*) FROM USUARIOS WHERE EMAIL = ? AND CLAVE = ?"
+        val cursor = db.rawQuery(sql, arrayOf(email, clave))
+
+        var count = 0
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0)
+        }
+        cursor.close()
+        db.close()
+
+        if (count > 0) {
+            mostrarExito("¡Bienvenido!", "Acceso concedido mediante SQLite.")
+        } else {
+            mostrarError("Error de Acceso", "Credenciales inválidas. Usuario no encontrado o contraseña incorrecta.")
         }
     }
 }

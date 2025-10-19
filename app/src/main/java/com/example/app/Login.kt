@@ -64,7 +64,7 @@ class Login : AppCompatActivity() {
         txtClave = findViewById(R.id.editTextTextPassword2)
         btnIngresar = findViewById(R.id.btningresar)
         btnRegistrar = findViewById(R.id.btnRegistrarse)
-        btnRecuperar = findViewById(R.id.editTextText2)
+        btnRecuperar = findViewById(R.id.btnRecuperar)
 
         datos = Volley.newRequestQueue(this)
 

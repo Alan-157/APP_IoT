@@ -3,9 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-feature android:name="android.hardware.camera" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.flash"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -16,6 +21,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.App">
+        <activity
+            android:name=".RecuperarContrasena"
+            android:exported="false" />
+        <activity
+            android:name=".GestionDeUsuarios"
+            android:exported="false" />
+        <activity
+            android:name=".Desarrollador"
+            android:exported="false" />
         <activity
             android:name=".ModificarEliminar"
             android:exported="false" />

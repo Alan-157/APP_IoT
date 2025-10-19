@@ -11,25 +11,25 @@
         android:id="@+id/textView"
         android:layout_width="242dp"
         android:layout_height="51dp"
+        android:layout_marginTop="32dp"
         android:text="BIENVENIDOS A MI APP"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.755"
+        app:layout_constraintHorizontal_bias="0.603"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2"
-        app:layout_constraintVertical_bias="0.022" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
     <Button
         android:id="@+id/btningresar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="288dp"
+        android:layout_marginTop="48dp"
         android:backgroundTint="#3F51B5"
         android:text="Ingresar"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.516"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword2" />
 
     <Button
         android:id="@+id/btnRegistrarse"
@@ -37,20 +37,22 @@
         android:layout_height="wrap_content"
         android:backgroundTint="#009688"
         android:text="Registrarse"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.524"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btningresar"
-        app:layout_constraintVertical_bias="0.116" />
+        app:layout_constraintVertical_bias="0.258" />
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="167dp"
-        android:layout_height="215dp"
-        android:layout_marginTop="40dp"
+        android:layout_width="141dp"
+        android:layout_height="139dp"
+        android:layout_marginTop="16dp"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.546"
+        app:layout_constraintHorizontal_bias="0.54"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/icono" />
@@ -59,43 +61,41 @@
         android:id="@+id/editTextTextEmailAddress2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:backgroundTintMode="add"
         android:ems="10"
         android:hint="example@gmail.com"
         android:inputType="textEmailAddress"
-        app:layout_constraintBottom_toTopOf="@+id/btningresar"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.543"
+        app:layout_constraintHorizontal_bias="0.587"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.334" />
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <EditText
         android:id="@+id/editTextTextPassword2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
         android:backgroundTintMode="add"
         android:ems="10"
         android:hint="*********"
         android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/btningresar"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.543"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress2"
-        app:layout_constraintVertical_bias="0.355" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress2" />
 
-    <EditText
-        android:id="@+id/editTextText2"
+    <Button
+        android:id="@+id/btnRecuperar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        android:editable="false"
-        android:ems="10"
-        android:inputType="text"
-        android:text="¿Olvido su contraseña?"
+        android:layout_marginTop="48dp"
+        android:text="¿Olvide mi contraseña?"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.543"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnRegistrarse" />
 
