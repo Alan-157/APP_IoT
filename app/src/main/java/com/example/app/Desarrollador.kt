@@ -37,7 +37,7 @@ class Desarrollador : AppCompatActivity() {
 
         // 3. Lógica para abrir el enlace
         btnGithub.setOnClickListener {
-            val url = "https://github.com/tu-usuario-iot" // Cambia esto por tu enlace
+            val url = "https://github.com/Alan-157" // Cambia esto por tu enlace
 
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse(url)

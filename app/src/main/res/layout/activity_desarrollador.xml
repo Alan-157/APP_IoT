@@ -51,38 +51,39 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txt_user_name_dinamico" />
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="200dp"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        android:layout_marginTop="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_user_email_dinamico" />
-
     <TextView
         android:id="@+id/txt_titulo_desarrollador"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="DATOS DESARROLLADOR"
+        android:layout_marginTop="32dp"
+        android:text="DATOS DESARROLLADORES"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txt_user_email_dinamico" />
 
+    <Button
+        android:id="@+id/btn_github"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="#00BCD4"
+        android:text="Ver GitHub"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_email" />
+
     <TextView
-        android:id="@+id/txt_rol"
+        android:id="@+id/txt_rol2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="ROL: Desarrollador Móvil IoT"
+        android:layout_marginTop="16dp"
+        android:text="NOMBRES: ALONZO OVIEDO y NICOLAS ZEPEDA"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txt_titulo_desarrollador" />
 
@@ -90,23 +91,35 @@
         android:id="@+id/txt_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="20dp"
         android:text="CARRERA: Ingeniería en Informatica"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txt_rol" />
 
-    <Button
-        android:id="@+id/btn_github"
+    <View
+        android:id="@+id/divider"
         android:layout_width="200dp"
-        android:layout_height="wrap_content"
+        android:layout_height="1dp"
         android:layout_marginTop="32dp"
-        android:backgroundTint="#0B4783"
-        android:text="Ver GitHub"
+        android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_email" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_user_email_dinamico" />
+
+    <TextView
+        android:id="@+id/txt_rol"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="ROL: Desarrollador Móvil IoT"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_rol2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
