@@ -11,7 +11,7 @@ class ConexionDbHelper(
     // Usamos sqlUsuarios para mantener el nombre original del campo
     val sqlUsuarios = "CREATE TABLE USUARIOS (ID INTEGER PRIMARY KEY, NOMBRE TEXT, APELLIDO TEXT, EMAIL TEXT, CLAVE TEXT)";
 
-    // NUEVA TABLA: Guarda Email, Codigo de 5 digitos, y tiempo de expiración (timestamp Long)
+    //Guarda Email, Codigo de 5 digitos, y tiempo de expiración (timestamp Long)
     val sqlRecuperacion = "CREATE TABLE RECUPERACION (EMAIL TEXT PRIMARY KEY, CODIGO TEXT, EXPIRACION INTEGER)";
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -81,7 +81,7 @@ class ConexionDbHelper(
         db.close()
     }
 
-    // Función para actualizar la clave del usuario (final del proceso de recuperación)
+    //actualizar la clave del usuario (final del proceso de recuperación)
     fun updateClave(email: String, newClave: String) {
         val db = this.writableDatabase
         val values = ContentValues().apply {
@@ -91,7 +91,7 @@ class ConexionDbHelper(
         db.close()
     }
 
-    // NUEVA FUNCIÓN: Obtener Nombre, Apellido, y Email del usuario logueado
+    //Obtener Nombre, Apellido, y Email del usuario logueado
     fun getUserData(email: String, clave: String): Map<String, String>? {
         val db = this.readableDatabase
         // Normalizar el email para la búsqueda, ya que al guardar se normaliza
