@@ -11,9 +11,10 @@
         android:id="@+id/img_logo"
         android:layout_width="140dp"
         android:layout_height="156dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="240dp"
         android:src="@drawable/icono"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.553"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
