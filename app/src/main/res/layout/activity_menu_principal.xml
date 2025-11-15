@@ -47,10 +47,21 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:backgroundTint="#03A9F4"
-        android:text="DATOS SENSOR"
+        android:text="CONTROL BARRERA"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_crud_usuario" />
+
+    <Button
+        android:id="@+id/btn_gestion_sensores"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:backgroundTint="#FF9800"
+        android:text="GESTIÓN SENSORES (ADMIN)"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_datos_sensor" />
 
     <Button
         android:id="@+id/btn_desarrollador"
@@ -61,6 +72,6 @@
         android:text="DESARROLLADOR"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_datos_sensor" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_gestion_sensores" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

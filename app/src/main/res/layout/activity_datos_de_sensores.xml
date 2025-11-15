@@ -19,79 +19,86 @@
         app:srcCompat="@drawable/icono" />
 
     <TextView
-        android:id="@+id/txt_fecha"
+        android:id="@+id/txt_titulo_control"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="DATOS SENSORES"
+        android:text="CONTROL DE ACCESO IOT"
         android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-    <ImageView
-        android:id="@+id/imagen_temp"
-        android:layout_width="112dp"
-        android:layout_height="163dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_fecha"
-        app:srcCompat="@drawable/tempbaja" />
-
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="122dp"
-        android:layout_height="106dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imagen_temp"
-        app:srcCompat="@drawable/humedad" />
-
     <TextView
-        android:id="@+id/txt_temp"
-        android:layout_width="130dp"
-        android:layout_height="29dp"
-        android:layout_marginTop="56dp"
-        android:text="TextView"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.569"
-        app:layout_constraintStart_toEndOf="@+id/imagen_temp"
-        app:layout_constraintTop_toBottomOf="@+id/txt_fecha" />
-
-    <TextView
-        android:id="@+id/txt_humedad"
-        android:layout_width="129dp"
-        android:layout_height="34dp"
-        android:layout_marginTop="152dp"
-        android:text="TextView"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.558"
-        app:layout_constraintStart_toEndOf="@+id/imageView4"
-        app:layout_constraintTop_toBottomOf="@+id/txt_temp" />
-
-    <ImageView
-        android:id="@+id/imagen_ampolleta"
-        android:layout_width="167dp"
-        android:layout_height="172dp"
-        android:layout_marginTop="64dp"
-        app:layout_constraintEnd_toStartOf="@+id/imagen_linterna"
-        app:layout_constraintHorizontal_bias="0.542"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView4"
-        app:srcCompat="@drawable/ampoencendida" />
-
-    <ImageView
-        android:id="@+id/imagen_linterna"
-        android:layout_width="168dp"
-        android:layout_height="232dp"
+        android:id="@+id/txt_estado_barrera_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="20dp"
+        android:text="ESTADO DE BARRERA:"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView4"
-        app:srcCompat="@drawable/linternaencendida" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_titulo_control" />
+
+    <TextView
+        android:id="@+id/txt_estado_barrera_dinamico"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Cargando..."
+        android:textColor="#FF9800"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_estado_barrera_label" />
+
+    <Button
+        android:id="@+id/btn_abrir_barrera"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="#4CAF50"
+        android:text="ABRIR BARRERA"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_estado_barrera_dinamico" />
+
+    <Button
+        android:id="@+id/btn_cerrar_barrera"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#F44336"
+        android:text="CERRAR BARRERA"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_abrir_barrera" />
+
+    <TextView
+        android:id="@+id/txt_ultimo_evento_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="ÚLTIMO EVENTO DE ACCESO:"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_cerrar_barrera" />
+
+    <TextView
+        android:id="@+id/txt_ultimo_evento_dinamico"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:text="Esperando evento..."
+        android:textAlignment="center"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_ultimo_evento_label" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
