@@ -11,6 +11,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import cn.pedant.SweetAlert.SweetAlertDialog
 import android.util.Patterns
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import org.json.JSONException
+import org.json.JSONObject
 
 // Variables globales para la UI (Campos y Botones)
 private lateinit var txtEmail: EditText
@@ -18,10 +24,15 @@ private lateinit var txtClave: EditText
 private lateinit var btnIngresar: Button
 private lateinit var btnRegistrarse: Button
 private lateinit var btnRecuperar: Button
+private lateinit var datos: RequestQueue // NECESARIO PARA VOLLEY/AWS
 
 class MainActivity : AppCompatActivity() {
 
-    // --- Funciones de SweetAlert (Reutilizables) ---
+    // Constantes para SharedPreferences
+    private val LOGGED_IN_NAME = "LOGGED_IN_NAME"
+    private val LOGGED_IN_EMAIL = "LOGGED_IN_EMAIL"
+    private val IS_LOGGED_IN = "IS_LOGGED_IN"
+
     private fun mostrarAdvertencia(title: String, content: String) {
         SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
             .setTitleText(title)
@@ -68,6 +79,8 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        datos = Volley.newRequestQueue(this) // Inicializar Volley RequestQueue
+
         // 1. Enlazar Vistas
         txtEmail = findViewById(R.id.editTextTextEmailAddress2)
         txtClave = findViewById(R.id.editTextTextPassword2)
@@ -75,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         btnRegistrarse = findViewById(R.id.btnRegistrarse)
         btnRecuperar = findViewById(R.id.btnRecuperar)
 
-        // 2. Lógica del Botón Ingresar (Autenticación Local)
+        // 2. Lógica del Botón Ingresar (Autenticación AWS)
         btnIngresar.setOnClickListener {
             val emailText = txtEmail.text.toString().trim()
             val claveText = txtClave.text.toString().trim()
@@ -86,7 +99,7 @@ class MainActivity : AppCompatActivity() {
             } else if (!isValidEmail(emailText)) {
                 mostrarAdvertencia("Formato Inválido", "El formato del email no es correcto.")
             } else {
-                checkCredentialsLocal(emailText, claveText) // Llama a la autenticación LOCAL
+                checkCredentialsAWS(emailText.toLowerCase(), claveText) // Llama a la autenticación AWS
             }
         }
 
@@ -103,27 +116,46 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // FUNCIÓN MODIFICADA: Autenticación local contra SQLite y guarda datos del usuario
-    private fun checkCredentialsLocal(email: String, clave: String) {
-        val helper = ConexionDbHelper(this)
+    // FUNCIÓN FINAL: Autenticación contra AWS API (login.php)
+    private fun checkCredentialsAWS(email: String, clave: String) {
 
-        // Obtener datos del usuario (la función getUserData se encarga de la normalización)
-        val userData = helper.getUserData(email, clave)
+        // **REEMPLAZAR** ESTA URL CON TU ENDPOINT REAL DE AWS
+        val url = "http://107.20.82.249/api/login.php?email=$email&clave=$clave"
 
-        if (userData != null) {
-            // LOGIN EXITOSO: Guardar datos en SharedPreferences
-            val sharedPref = getSharedPreferences("UserSession", Context.MODE_PRIVATE)
-            with (sharedPref.edit()) {
-                // Guardamos el nombre completo (Nombre + Apellido)
-                putString("LOGGED_IN_NAME", userData["nombre"] + " " + userData["apellido"])
-                putString("LOGGED_IN_EMAIL", userData["email"])
-                putBoolean("IS_LOGGED_IN", true)
-                apply()
+        val jsonObjectRequest = JsonObjectRequest(
+            Request.Method.GET, url, null,
+            { response ->
+                try {
+                    val estado = response.getString("estado")
+
+                    if (estado == "1") {
+                        // LOGIN EXITOSO: Leer datos y guardar en SharedPreferences
+                        val nombre = response.getString("nombre")
+                        val apellido = response.getString("apellido")
+                        val userEmail = response.getString("email")
+
+                        val sharedPref = getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+                        with (sharedPref.edit()) {
+                            // Guardamos el nombre completo y el email
+                            putString(LOGGED_IN_NAME, "$nombre $apellido")
+                            putString(LOGGED_IN_EMAIL, userEmail)
+                            putBoolean(IS_LOGGED_IN, true)
+                            // Se asume que la API de login.php devuelve el ROL
+                            apply()
+                        }
+
+                        mostrarExito("¡Bienvenido!", "Acceso concedido desde AWS.")
+                    } else {
+                        mostrarError("Error de Acceso", "Credenciales inválidas. Usuario no encontrado o contraseña incorrecta.")
+                    }
+                } catch (e: JSONException) {
+                    mostrarError("Error de Servidor", "No se pudo procesar la respuesta JSON del servidor.")
+                }
+            },
+            { error ->
+                mostrarError("Error de Conexión", "No se pudo conectar a la API de autenticación. Error: ${error.message}")
             }
-
-            mostrarExito("¡Bienvenido!", "Acceso concedido.")
-        } else {
-            mostrarError("Error de Acceso", "Credenciales inválidas. Usuario no encontrado o contraseña incorrecta.")
-        }
+        )
+        datos.add(jsonObjectRequest)
     }
 }
