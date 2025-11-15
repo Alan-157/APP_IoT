@@ -1,6 +1,7 @@
+// alan-157/app_iot/APP_IoT-0fd35a9b9e51fc57284c5c568fb0e9eda6ee5c8d/app/src/main/java/com/example/app/Registro.kt
+
 package com.example.app
 
-import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -11,6 +12,11 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import cn.pedant.SweetAlert.SweetAlertDialog
 import android.util.Patterns
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import java.util.HashMap
 
 // Variables globales declaradas fuera de la clase
 lateinit var nombre: EditText
@@ -20,6 +26,7 @@ lateinit var clave: EditText
 lateinit var clave_repite: EditText
 lateinit var btn_reg: Button
 
+private lateinit var datos: RequestQueue // Inicializar Volley RequestQueue
 
 class Registro : AppCompatActivity() {
 
@@ -43,6 +50,15 @@ class Registro : AppCompatActivity() {
             .show()
     }
 
+    private fun mostrarError(title: String, content: String) {
+        SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
+            .setTitleText(title)
+            .setContentText(content)
+            .setConfirmText("Cerrar")
+            .setConfirmClickListener { dialog -> dialog.dismissWithAnimation() }
+            .show()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -52,6 +68,9 @@ class Registro : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        datos = Volley.newRequestQueue(this)
+
         nombre = findViewById(R.id.txtnombres)
         apellido = findViewById(R.id.txtapellidos)
         email = findViewById(R.id.txtemail)
@@ -69,8 +88,6 @@ class Registro : AppCompatActivity() {
             // NORMALIZACIÓN: Convertimos a minúsculas antes de validar unicidad
             val normalizedEmail = emailText.toLowerCase()
 
-            val helper = ConexionDbHelper(this)
-
             if (nombreText.isBlank() || apellidoText.isBlank() ||
                 emailText.isBlank() || claveText.isBlank() || repiteText.isBlank()) {
                 mostrarAdvertencia("Campos Obligatorios", "Por favor, complete todos los campos.")
@@ -80,46 +97,59 @@ class Registro : AppCompatActivity() {
                 mostrarAdvertencia("Contraseña No Coincide", "Las contraseñas ingresadas no coinciden.")
             } else if (!isPasswordRobust(claveText)) {
                 mostrarAdvertencia("Contraseña Débil", "La clave debe tener al menos 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial.")
-            } else if (helper.checkEmailExists(normalizedEmail)) { // Usamos email normalizado
-                mostrarAdvertencia("Email Duplicado", "El E-mail ingresado ya se encuentra registrado.")
             } else {
-                guardar(nombreText, apellidoText, normalizedEmail, claveText) // Pasamos email normalizado
+                // Se llama directamente a la función de registro en AWS
+                registrarUsuarioAWS(nombreText, apellidoText, normalizedEmail, claveText)
             }
         }
     }
 
-    fun guardar(nom: String, ape: String, mai: String, cla: String) {
-        val helper = ConexionDbHelper(this)
-        val db = helper.readableDatabase
-        try {
-            val datos = ContentValues().apply {
-                put("Nombre", nom)
-                put("Apellido", ape)
-                put("Email", mai) // El email ya está normalizado (en minúsculas)
-                put("Clave", cla)
-            }
-            db.insert("USUARIOS", null, datos)
+    // Función MODIFICADA: Ahora usa Volley para enviar datos de registro a AWS
+    private fun registrarUsuarioAWS(nom: String, ape: String, mai: String, cla: String) {
 
-            SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
-                .setTitleText("¡Registro Exitoso!")
-                .setContentText("El usuario ha sido registrado. Inicie sesión.")
-                .setConfirmText("Aceptar")
-                .setConfirmClickListener { dialog ->
-                    dialog.dismissWithAnimation()
-                    val loginIntent = Intent(this, MainActivity::class.java)
-                    startActivity(loginIntent)
-                    finish()
+        // URL de tu API para registro. DEBE SER REEMPLAZADA.
+        val url = "http://107.20.82.249/api/registrar_usuario.php"
+
+        val stringRequest = object : StringRequest(
+            Method.POST, url,
+            { response ->
+                // Asumiendo que el API devuelve "EXITO" o "DUPLICADO" o "ERROR_DB"
+                when (response.trim()) {
+                    "EXITO" -> {
+                        SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+                            .setTitleText("¡Registro Exitoso!")
+                            .setContentText("El usuario ha sido registrado en AWS. Inicie sesión.")
+                            .setConfirmText("Aceptar")
+                            .setConfirmClickListener { dialog ->
+                                dialog.dismissWithAnimation()
+                                val loginIntent = Intent(this@Registro, MainActivity::class.java)
+                                startActivity(loginIntent)
+                                finish()
+                            }
+                            .show()
+                    }
+                    "DUPLICADO" -> {
+                        mostrarAdvertencia("Email Duplicado", "El E-mail ingresado ya se encuentra registrado en AWS.")
+                    }
+                    else -> {
+                        mostrarError("Error de Servidor", "Ocurrió un error al guardar en AWS: $response")
+                    }
                 }
-                .show()
-
-        } catch (e: Exception) {
-            SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
-                .setTitleText("Error de Servidor")
-                .setContentText("Ocurrió un error al guardar: ${e.message}")
-                .setConfirmText("Cerrar")
-                .show()
-        } finally {
-            db.close()
+            },
+            { error ->
+                mostrarError("Error de Conexión", "No se pudo conectar a la API de registro. Error: ${error.message}")
+            }
+        ) {
+            override fun getParams(): Map<String, String> {
+                // Parámetros que se envían al API (POST data)
+                val params: MutableMap<String, String> = HashMap()
+                params["nombre"] = nom
+                params["apellido"] = ape
+                params["email"] = mai
+                params["clave"] = cla
+                return params
+            }
         }
+        datos.add(stringRequest)
     }
 }

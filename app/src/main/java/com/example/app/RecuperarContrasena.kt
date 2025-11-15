@@ -10,12 +10,18 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import cn.pedant.SweetAlert.SweetAlertDialog
 import android.util.Patterns
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import java.util.Random
+import java.util.HashMap
 
 class RecuperarContrasena : AppCompatActivity() {
 
     private lateinit var editEmailRecuperar: EditText
     private lateinit var btnRecuperarEnviar: Button
+    private lateinit var datos: RequestQueue
 
     private fun isValidEmail(target: CharSequence?): Boolean {
         return !target.isNullOrEmpty() && Patterns.EMAIL_ADDRESS.matcher(target).matches()
@@ -30,9 +36,13 @@ class RecuperarContrasena : AppCompatActivity() {
             .show()
     }
 
-    // Función para generar código de 5 dígitos
-    private fun generateRecoveryCode(): String {
-        return (10000..99999).random().toString()
+    private fun mostrarError(title: String, content: String) {
+        SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
+            .setTitleText(title)
+            .setContentText(content)
+            .setConfirmText("Cerrar")
+            .setConfirmClickListener { dialog -> dialog.dismissWithAnimation() }
+            .show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +55,7 @@ class RecuperarContrasena : AppCompatActivity() {
             insets
         }
 
+        datos = Volley.newRequestQueue(this)
         editEmailRecuperar = findViewById(R.id.edit_text_email_recuperar)
         btnRecuperarEnviar = findViewById(R.id.btn_recuperar_enviar)
 
@@ -56,50 +67,56 @@ class RecuperarContrasena : AppCompatActivity() {
             } else if (!isValidEmail(emailText)) {
                 mostrarAdvertencia("Formato Inválido", "El formato del email no es correcto.")
             } else {
-                processRecoveryRequest(emailText)
+                processRecoveryRequestAWS(emailText.toLowerCase()) // Llamada a la API
             }
         }
     }
 
-    private fun processRecoveryRequest(email: String) {
-        val helper = ConexionDbHelper(this)
+    // FUNCIÓN MODIFICADA: Envia el email a AWS para generar y guardar el código
+    private fun processRecoveryRequestAWS(email: String) {
+        // URL de tu API para solicitar el código. DEBE SER REEMPLAZADA.
+        val url = "http://107.20.82.249/api/solicitar_codigo.php"
 
-        // NORMALIZACIÓN: Convertimos el email a minúsculas para la búsqueda y almacenamiento
-        val normalizedEmail = email.toLowerCase()
-
-        // 1. Verificar si el email existe en la BD
-        if (!helper.checkEmailExists(normalizedEmail)) {
-            mostrarAdvertencia("Email no Encontrado", "El email ingresado no está asociado a ninguna cuenta.")
-            return
-        }
-
-        // 2. Generar código y tiempo de expiración (60 segundos)
-        val code = generateRecoveryCode()
-        val expirationTime = System.currentTimeMillis() + 60000
-
-        try {
-            // 3. Guardar el código y el tiempo de expiración en la tabla RECUPERACION (usando email normalizado)
-            helper.saveRecoveryCode(normalizedEmail, code, expirationTime)
-
-            // 4. Notificar éxito (Simulando envío de correo) y redirigir
-            SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
-                .setTitleText("Código Enviado (Simulación)")
-                .setContentText("El código ($code) ha sido generado y estará activo por 60 segundos. Ingrese el código para continuar.")
-                .setConfirmText("Continuar")
-                .setConfirmClickListener { dialog ->
-                    dialog.dismissWithAnimation()
-
-                    val intent = Intent(this@RecuperarContrasena, IngresarCodigo::class.java).apply {
-                        // ASEGURAMOS DE PASAR EL EMAIL NORMALIZADO A LA SIGUIENTE ACTIVIDAD
-                        putExtra("EMAIL_RECUPERACION", normalizedEmail)
+        val stringRequest = object : StringRequest(
+            Method.POST, url,
+            { response ->
+                when (val code = response.trim()) {
+                    "NO_EXISTE" -> {
+                        mostrarAdvertencia("Email no Encontrado", "El email ingresado no está asociado a ninguna cuenta en AWS.")
                     }
-
-                    startActivity(intent)
-                    finish()
+                    "ERROR_DB" -> {
+                        mostrarError("Error Servidor", "No se pudo iniciar el proceso de recuperación en la BD.")
+                    }
+                    else -> {
+                        // El API devuelve el código generado (e.g., "12345")
+                        SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+                            .setTitleText("Código Enviado (Simulación)")
+                            .setContentText("El código ($code) ha sido generado y estará activo por 60 segundos. Ingrese el código para continuar.")
+                            .setConfirmText("Continuar")
+                            .setConfirmClickListener { dialog ->
+                                dialog.dismissWithAnimation()
+                                val intent = Intent(this@RecuperarContrasena, IngresarCodigo::class.java).apply {
+                                    putExtra("EMAIL_RECUPERACION", email)
+                                    putExtra("CODIGO_GENERADO", code) // Pasamos el código que nos devolvió AWS
+                                }
+                                startActivity(intent)
+                                finish()
+                            }
+                            .show()
+                    }
                 }
-                .show()
-        } catch (e: Exception) {
-            mostrarAdvertencia("Error", "No se pudo iniciar el proceso de recuperación.")
+            },
+            { error ->
+                mostrarError("Error de Conexión", "No se pudo conectar a la API de recuperación. Error: ${error.message}")
+            }
+        ) {
+            override fun getParams(): Map<String, String> {
+                // Parámetros que se envían al API
+                val params: MutableMap<String, String> = HashMap()
+                params["email"] = email
+                return params
+            }
         }
+        datos.add(stringRequest)
     }
 }

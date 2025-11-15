@@ -27,14 +27,13 @@ class CRUD_Usuarios : AppCompatActivity() {
         btnIngresarUsuario = findViewById(R.id.btn_ingresar_usuario)
         btnListarUsuarios = findViewById(R.id.btn_listar_usuarios)
 
-        // Lógica para Gestionar Sensores (Admin) -> Nuevo flujo para la Evaluación
+        // Lógica para Ingresar Usuarios (Vuelve a la funcionalidad original)
         btnIngresarUsuario.setOnClickListener {
-            // REDIRIGIMOS A LA GESTIÓN DE SENSORES
-            val intentGestion = Intent(this, GestionSensores::class.java)
-            startActivity(intentGestion)
+            val intentRegistro = Intent(this, Registro::class.java)
+            startActivity(intentRegistro)
         }
 
-        // Lógica para Listar Usuarios -> Redirige a Listado.kt (Mantenido el flujo de Listado de Usuarios original)
+        // Lógica para Listar Usuarios
         btnListarUsuarios.setOnClickListener {
             val intentListado = Intent(this, Listado::class.java)
             startActivity(intentListado)
