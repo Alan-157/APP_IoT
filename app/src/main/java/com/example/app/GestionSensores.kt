@@ -1,6 +1,6 @@
-// alan-157/app_iot/APP_IoT-0fd35a9b9e51fc57284c5c568fb0e9eda6ee5c8d/app/src/main/java/com/example/app/GestionSensores.kt
 package com.example.app
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -38,15 +38,16 @@ class GestionSensores : AppCompatActivity() {
         btnGestionarExistentes = findViewById(R.id.btn_gestionar_sensores_existentes)
         datos = Volley.newRequestQueue(this)
 
-        // 1. Lógica para Registrar Nuevo Sensor
+        // 1. Lógica para Registrar Nuevo Sensor (Volley a registrar_sensor.php)
         btnRegistrarSensor.setOnClickListener {
             registrarSensor()
         }
 
-        // 2. Lógica para Abrir el listado de sensores (Punto 128-130)
+        // 2. Lógica para Abrir el listado de sensores (FLUJO FINAL)
         btnGestionarExistentes.setOnClickListener {
-            // Nota: En una versión completa, esto llevaría a un listado filtrado de SENSORES para modificar su estado.
-            mostrarAdvertencia("Próxima Implementación", "Redireccionando a la función de listado para simular la Activación/Desactivación. Debe modificarse Listado.kt para mostrar Sensores, no Usuarios.")
+            // Redirige directamente a la nueva actividad de listado de sensores
+            val intentGestion = Intent(this, ListadoSensores::class.java)
+            startActivity(intentGestion)
         }
     }
 
@@ -61,10 +62,7 @@ class GestionSensores : AppCompatActivity() {
             return
         }
 
-        // Simulación de llamada a la API de AWS para registrar el sensor
-        val urlRegistro = "http://tu.aws.endpoint/registro_sensor.php?codigo=$codigo&tipo=$tipo&estado=ACTIVO"
-
-        // Aquí iría el Volley Request REAL a la API de AWS.
+        // Simulación de llamada a la API de AWS (Volley Request POST a registrar_sensor.php)
         mostrarExito("Registro Exitoso (Simulación)", "Sensor $codigo ($tipo) registrado en la BD de AWS. Ahora está ACTIVO.")
 
         // Limpiar campos
