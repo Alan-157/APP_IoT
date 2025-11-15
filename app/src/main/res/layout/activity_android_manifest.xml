@@ -22,13 +22,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.App">
         <activity
-            android:name=".AndroidManifest"
-            android:exported="false" />
-        <activity
             android:name=".GestionSensores"
-            android:exported="false" />
-        <activity
-            android:name=".ActivityGestionSensores"
             android:exported="false" />
         <activity
             android:name=".CrearClaves"

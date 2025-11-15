@@ -1,40 +1,33 @@
+// alan-157/app_iot/APP_IoT-0fd35a9b9e51fc57284c5c568fb0e9eda6ee5c8d/app/src/main/java/com/example/app/DatosDeSensores.kt
 package com.example.app
 
-import android.content.Context
-import android.hardware.camera2.CameraManager
-import android.icu.text.SimpleDateFormat
-import android.icu.util.Calendar
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.widget.ImageView
+import android.widget.Button
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.android.volley.Request
+import androidx.core.content.ContextCompat
 import com.android.volley.RequestQueue
-import com.android.volley.VolleyError
-import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import org.json.JSONException
-import org.json.JSONObject
 import cn.pedant.SweetAlert.SweetAlertDialog
+import java.util.Random
 
-// Variables globales (fecha eliminada)
-lateinit var temp: android.widget.TextView
-lateinit var hum: android.widget.TextView
-lateinit var imagenTemp: ImageView
-lateinit var imagenAmpolleta: ImageView // Nueva: para la ampolleta
-lateinit var imagenLinterna: ImageView // Nueva: para la linterna
+// Variables globales actualizadas
+private lateinit var btnAbrirBarrera: Button
+private lateinit var btnCerrarBarrera: Button
+private lateinit var txtEstadoBarrera: TextView
+private lateinit var txtUltimoEvento: TextView
 
-lateinit var datos: RequestQueue
-val mHandler = Handler(Looper.getMainLooper())
+private lateinit var datos: RequestQueue
+private val mHandler = Handler(Looper.getMainLooper())
 
-// Variables de estado
-private var isLightOn: Boolean = false // Estado de la ampolleta (UI)
-private var isFlashlightOn: Boolean = false // Estado de la linterna (Hardware)
+// Variables de estado simulado
+private var barrierState: String = "CERRADA"
+private var lastEvent: String = "Ningún evento registrado."
 
 
 class DatosDeSensores : AppCompatActivity() {
@@ -49,117 +42,103 @@ class DatosDeSensores : AppCompatActivity() {
             insets
         }
 
-        // Inicialización de vistas (DEBES AÑADIR LOS IDs en activity_datos_de_sensores.xml)
-        temp=findViewById(R.id.txt_temp)
-        hum=findViewById(R.id.txt_humedad)
-        imagenTemp=findViewById(R.id.imagen_temp)
-        imagenAmpolleta = findViewById(R.id.imagen_ampolleta) // PENDIENTE: Añadir ID en XML
-        imagenLinterna = findViewById(R.id.imagen_linterna) // PENDIENTE: Añadir ID en XML
+        // 1. Inicialización de vistas
+        btnAbrirBarrera = findViewById(R.id.btn_abrir_barrera)
+        btnCerrarBarrera = findViewById(R.id.btn_cerrar_barrera)
+        txtEstadoBarrera = findViewById(R.id.txt_estado_barrera_dinamico)
+        txtUltimoEvento = findViewById(R.id.txt_ultimo_evento_dinamico)
 
         datos = Volley.newRequestQueue(this)
-        mHandler.post(refrescar)
+        mHandler.post(refrescarEstado) // Iniciar el refresco del estado
 
-        // Lógica de la Ampolleta (Toggle UI con SweetAlert) - Punto 139
-        imagenAmpolleta.setOnClickListener {
-            isLightOn = !isLightOn
-            if (isLightOn) {
-                imagenAmpolleta.setImageResource(R.drawable.ampoencendida)
-                mostrarAdvertencia("Ampolleta", "La ampolleta está ENCENDIDA.")
-            } else {
-                imagenAmpolleta.setImageResource(R.drawable.ampoapagada)
-                mostrarAdvertencia("Ampolleta", "La ampolleta está APAGADA.")
+        // 2. Lógica de Control Manual de Barrera
+        btnAbrirBarrera.setOnClickListener {
+            controlBarrera("ABRIR_MANUAL")
+        }
+
+        btnCerrarBarrera.setOnClickListener {
+            controlBarrera("CERRAR_MANUAL")
+        }
+    }
+
+    // Función para enviar la orden al backend/API (simulado)
+    private fun controlBarrera(accion: String) {
+        val nuevoEstado = if (accion == "ABRIR_MANUAL") "ABIERTA" else "CERRADA"
+        val evento = if (accion == "ABRIR_MANUAL") "Apertura manual enviada." else "Cierre manual enviado."
+
+        // 1. Actualizar el estado (simulado) y registrar evento (simulado)
+        barrierState = nuevoEstado
+        // Llamada a la función estática de fecha
+        lastEvent = "$evento Estado: $nuevoEstado (${MenuPrincipal.fechahora()})"
+        txtEstadoBarrera.text = nuevoEstado
+
+        // Uso de ContextCompat.getColor()
+        val colorId = if (nuevoEstado == "ABIERTA") android.R.color.holo_green_dark else android.R.color.holo_red_dark
+        txtEstadoBarrera.setTextColor(ContextCompat.getColor(this, colorId))
+
+        txtUltimoEvento.text = lastEvent
+
+        mostrarExito("Control Manual", "Orden de '$nuevoEstado' enviada al NodeMCU. \nSe registrará en EVENTOS_ACCESO.")
+    }
+
+    // Función para obtener el estado y el último evento desde el API (simulado)
+    private fun obtenerEstadoYEvento() {
+        // SIMULACIÓN DE POLLING PARA CUMPLIR CON EL TIEMPO REAL
+        val randomEvent = Random().nextInt(100)
+
+        if (randomEvent < 10) { // Simula un acceso RFID
+            val esValido = randomEvent % 2 == 0
+            val rfidStatus = if (esValido) "ACCESO_VALIDO" else "ACCESO_RECHAZADO"
+            val rfidMsg = if (esValido) "¡Bienvenido! Barrera se abre." else "Acceso denegado (RFID no válido)."
+
+            // Actualizar estado (simulado)
+            if (esValido) barrierState = "ABIERTA" else barrierState = "CERRADA"
+            // Llamada a la función estática de fecha
+            lastEvent = "RFID Evento: $rfidMsg Tipo: $rfidStatus (${MenuPrincipal.fechahora()})"
+
+            // Actualizar UI
+            txtEstadoBarrera.text = barrierState
+            // Uso de ContextCompat.getColor()
+            val barrierColorId = if (barrierState == "ABIERTA") android.R.color.holo_green_dark else android.R.color.holo_red_dark
+            txtEstadoBarrera.setTextColor(ContextCompat.getColor(this, barrierColorId))
+
+            txtUltimoEvento.text = lastEvent
+
+            // Simular cierre automático 10s después
+            if (esValido) {
+                mHandler.postDelayed({
+                    barrierState = "CERRADA"
+                    txtEstadoBarrera.text = "CERRADA (Auto)"
+                    txtEstadoBarrera.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_dark))
+                }, 10000)
             }
-        }
-
-        // Lógica de la Linterna (Toggle Hardware) - Punto 139
-        imagenLinterna.setOnClickListener {
-            toggleFlashlight()
-        }
-    }
-
-    // Función para manejar el hardware de la linterna (Punto 139)
-    // Función para manejar el hardware de la linterna (Punto 139)
-    private fun toggleFlashlight() {
-        if (isFlashlightOn) {
-            turnOffFlashlight()
+        } else if (randomEvent < 20) {
+            // Simula un cambio de estado de barrera (e.g., por el microcontrolador)
+            barrierState = if (barrierState == "ABIERTA") "CERRADA" else "ABIERTA"
+            txtEstadoBarrera.text = barrierState
+            val barrierColorId = if (barrierState == "ABIERTA") android.R.color.holo_green_dark else android.R.color.holo_red_dark
+            txtEstadoBarrera.setTextColor(ContextCompat.getColor(this, barrierColorId))
         } else {
-            turnOnFlashlight()
+            // Mantiene el estado y solo refresca el texto del evento
+            txtEstadoBarrera.text = barrierState
+            val barrierColorId = if (barrierState == "ABIERTA") android.R.color.holo_green_dark else android.R.color.holo_red_dark
+            txtEstadoBarrera.setTextColor(ContextCompat.getColor(this, barrierColorId))
+        }
+
+        // Actualizar el estado del último evento si cambió
+        if (!txtUltimoEvento.text.contains("Evento:")) {
+            txtUltimoEvento.text = lastEvent
         }
     }
 
-    private fun turnOnFlashlight() {
-        try {
-            val cameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
-            val cameraId = cameraManager.cameraIdList[0]
-            cameraManager.setTorchMode(cameraId, true)
-            isFlashlightOn = true
-            imagenLinterna.setImageResource(R.drawable.linternaencendida)
-            mostrarAdvertencia("Linterna", "Linterna ENCENDIDA.")
-        } catch (e: Exception) {
-            // Manejo explícito de permisos/ausencia de hardware (Punto 139 / 1000)
-            mostrarError("Error de Linterna", "No se pudo encender el flash. Verifique que la aplicación tenga el permiso de CÁMARA o que su dispositivo tenga flash.")
-            isFlashlightOn = false // Asegura que el estado se restablezca en caso de fallo
-            imagenLinterna.setImageResource(R.drawable.linternaapagada)
-        }
-    }
-
-    private fun turnOffFlashlight() {
-        try {
-            val cameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
-            val cameraId = cameraManager.cameraIdList[0]
-            cameraManager.setTorchMode(cameraId, false)
-            isFlashlightOn = false
-            imagenLinterna.setImageResource(R.drawable.linternaapagada)
-        } catch (e: Exception) {
-            // En el apagado, solo registramos el error sin cambiar la UI si no es necesario
-            mostrarError("Error de Linterna", "Ocurrió un error al apagar el flash.")
-        }
-    }
-
-    // ELIMINADA: La función fechahora se movió a MenuPrincipal
-    // fun fechahora(): String { ... }
-
-    private fun obtenerDatos() {
-        val url = "https://www.pnk.cl/muestra_datos.php"
-        val request = JsonObjectRequest(
-            Request.Method.GET, url, null,
-            { response: JSONObject ->
-                try {
-                    temp?.text = "${response.getString("temperatura")} C"
-                    hum?.text = "${response.getString("humedad")} %"
-
-                    val valor = response.getString("temperatura").toFloat()
-                    cambiarImagen(valor)
-                } catch (e: JSONException) {
-                    e.printStackTrace()
-                }
-            },
-            { error: VolleyError ->
-                error.printStackTrace()
-            }
-        )
-        datos.add(request)
-    }
-
-    // Lógica de cambio de imagen de temperatura (>20 alta, <=20 baja) - Punto 139
-    private fun cambiarImagen(valor: Float) {
-        if (valor > 20) {
-            imagenTemp.setImageResource(R.drawable.tempalta) // > 20 C alta
-        } else {
-            imagenTemp.setImageResource(R.drawable.tempbaja) // <= 20 C baja
-        }
-    }
-
-    // Runnable sin la actualización de fecha
-    private val refrescar = object : Runnable {
+    // Runnable para refrescar el estado de la barrera cada segundo (simula tiempo real)
+    private val refrescarEstado = object : Runnable {
         override fun run() {
-            // ELIMINADO/COMENTADO: La fecha se actualiza en MenuPrincipal
-            obtenerDatos() // Llamada a la función que actualiza datos desde la API
-            mHandler.postDelayed(this, 1000) // Se vuelve a ejecutar en 1 segundo
+            obtenerEstadoYEvento()
+            mHandler.postDelayed(this, 1000)
         }
     }
 
-    // SweetAlerts simplificadas
     private fun mostrarAdvertencia(title: String, content: String) {
         SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
             .setTitleText(title)
@@ -168,6 +147,16 @@ class DatosDeSensores : AppCompatActivity() {
             .setConfirmClickListener { dialog -> dialog.dismissWithAnimation() }
             .show()
     }
+
+    private fun mostrarExito(title: String, content: String) {
+        SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+            .setTitleText(title)
+            .setContentText(content)
+            .setConfirmText("Aceptar")
+            .setConfirmClickListener { dialog -> dialog.dismissWithAnimation() }
+            .show()
+    }
+
     private fun mostrarError(title: String, content: String) {
         SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
             .setTitleText(title)
@@ -175,6 +164,11 @@ class DatosDeSensores : AppCompatActivity() {
             .setConfirmText("Cerrar")
             .setConfirmClickListener { dialog -> dialog.dismissWithAnimation() }
             .show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mHandler.removeCallbacks(refrescarEstado) // Detener el polling al salir
     }
 }
 
