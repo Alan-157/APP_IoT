@@ -5,61 +5,55 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CRUD_Usuarios">
+    tools:context=".RegistroDepartamento">
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/txt_titulo_depto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="GESTIÓN DE USUARIOS"
-        android:textSize="24sp"
+        android:layout_marginTop="60dp"
+        android:text="REGISTRO DE DEPARTAMENTO"
+        android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView7" />
-
-    <ImageView
-        android:id="@+id/imageView7"
-        android:layout_width="140dp"
-        android:layout_height="156dp"
-        android:layout_marginTop="32dp"
-        android:src="@drawable/icono"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btn_ingresar_usuario"
-        android:layout_width="250dp"
+    <EditText
+        android:id="@+id/edit_nombre_depto"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:backgroundTint="#E91E63"
-        android:text="REGISTRAR NUEVO USUARIO"
+        android:ems="10"
+        android:hint="Nombre del Departamento (Ej: 101)"
+        android:inputType="text"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_titulo_depto" />
 
-    <Button
-        android:id="@+id/btn_listar_usuarios"
-        android:layout_width="250dp"
+    <EditText
+        android:id="@+id/edit_bloque_torre"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:backgroundTint="#2196F3"
-        android:text="LISTAR Y MODIFICAR USUARIOS"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:hint="Bloque o Torre (Opcional)"
+        android:inputType="text"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_ingresar_usuario" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_nombre_depto" />
 
     <Button
-        android:id="@+id/btn_registro_depto"
+        android:id="@+id/btn_registrar_depto"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="50dp"
         android:backgroundTint="#00838F"
         android:text="REGISTRAR DEPARTAMENTO"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_listar_usuarios" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_bloque_torre" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

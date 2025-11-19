@@ -23,6 +23,9 @@
         android:theme="@style/Theme.App"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".RegistroDepartamento"
+            android:exported="false" />
+        <activity
             android:name=".ListadoSensores"
             android:exported="false" />
         <activity

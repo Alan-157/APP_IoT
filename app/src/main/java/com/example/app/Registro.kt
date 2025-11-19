@@ -1,11 +1,10 @@
-// alan-157/app_iot/APP_IoT-0fd35a9b9e51fc57284c5c568fb0e9eda6ee5c8d/app/src/main/java/com/example/app/Registro.kt
-
 package com.example.app
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.RadioButton
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -24,9 +23,10 @@ lateinit var apellido: EditText
 lateinit var email: EditText
 lateinit var clave: EditText
 lateinit var clave_repite: EditText
+lateinit var txtIdDepartamento: EditText // NUEVO: Campo de ID de Departamento
 lateinit var btn_reg: Button
 
-private lateinit var datos: RequestQueue // Inicializar Volley RequestQueue
+private lateinit var datos: RequestQueue
 
 class Registro : AppCompatActivity() {
 
@@ -76,6 +76,7 @@ class Registro : AppCompatActivity() {
         email = findViewById(R.id.txtemail)
         clave = findViewById(R.id.txtclave)
         clave_repite = findViewById(R.id.txtclave_repite)
+        txtIdDepartamento = findViewById(R.id.txt_id_departamento) // ENLACE AL NUEVO CAMPO
         btn_reg = findViewById(R.id.btn_registro)
 
         btn_reg.setOnClickListener {
@@ -85,7 +86,9 @@ class Registro : AppCompatActivity() {
             val claveText = clave.text.toString().trim()
             val repiteText = clave_repite.text.toString().trim()
 
-            // NORMALIZACIÓN: Convertimos a minúsculas antes de validar unicidad
+            // NUEVO: Lee el campo de departamento (puede ser vacío)
+            val idDeptoText = txtIdDepartamento.text.toString().trim()
+
             val normalizedEmail = emailText.toLowerCase()
 
             if (nombreText.isBlank() || apellidoText.isBlank() ||
@@ -98,22 +101,19 @@ class Registro : AppCompatActivity() {
             } else if (!isPasswordRobust(claveText)) {
                 mostrarAdvertencia("Contraseña Débil", "La clave debe tener al menos 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial.")
             } else {
-                // Se llama directamente a la función de registro en AWS
-                registrarUsuarioAWS(nombreText, apellidoText, normalizedEmail, claveText)
+                registrarUsuarioAWS(nombreText, apellidoText, normalizedEmail, claveText, idDeptoText)
             }
         }
     }
 
-    // Función MODIFICADA: Ahora usa Volley para enviar datos de registro a AWS
-    private fun registrarUsuarioAWS(nom: String, ape: String, mai: String, cla: String) {
+    // FUNCIÓN FINAL: Ahora acepta el idDepto y lo envía a AWS
+    private fun registrarUsuarioAWS(nom: String, ape: String, mai: String, cla: String, idDepto: String) {
 
-        // URL de tu API para registro. DEBE SER REEMPLAZADA.
         val url = "http://107.20.82.249/api/registrar_usuario.php"
 
         val stringRequest = object : StringRequest(
             Method.POST, url,
             { response ->
-                // Asumiendo que el API devuelve "EXITO" o "DUPLICADO" o "ERROR_DB"
                 when (response.trim()) {
                     "EXITO" -> {
                         SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
@@ -141,12 +141,12 @@ class Registro : AppCompatActivity() {
             }
         ) {
             override fun getParams(): Map<String, String> {
-                // Parámetros que se envían al API (POST data)
                 val params: MutableMap<String, String> = HashMap()
                 params["nombre"] = nom
                 params["apellido"] = ape
                 params["email"] = mai
                 params["clave"] = cla
+                params["id_departamento"] = idDepto // ENVÍO DEL ID DE DEPARTAMENTO
                 return params
             }
         }
