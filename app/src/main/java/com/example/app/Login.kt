@@ -99,7 +99,7 @@ class Login : AppCompatActivity() {
     private fun consultarDatos(usu: String, pass: String) {
         // *** CAMBIA ESTA URL POR LA URL REAL DE TU SERVICIO ***
         // URL de ejemplo basada en CONSULTAR LOGIN AWS + PHP + MYSQL.pdf
-        val url = "http://52.2.255.205/apiconsultausu.php?usu=$usu&pass=$pass"
+        val url = "http://107.20.82.249/api/consult.php?usu=$usu&pass=$pass"
 
         val request = JsonObjectRequest(
             Request.Method.GET, url, null,

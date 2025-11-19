@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 
 private lateinit var btnIngresarUsuario: Button
 private lateinit var btnListarUsuarios: Button
+private lateinit var btnRegistrarDepartamento: Button // NUEVA VARIABLE (Declara la referencia)
 
 class CRUD_Usuarios : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,17 +27,25 @@ class CRUD_Usuarios : AppCompatActivity() {
         // Enlace de vistas
         btnIngresarUsuario = findViewById(R.id.btn_ingresar_usuario)
         btnListarUsuarios = findViewById(R.id.btn_listar_usuarios)
+        // CORRECCIÓN: Enlazar el nuevo ID del XML
+        btnRegistrarDepartamento = findViewById(R.id.btn_registro_depto)
 
-        // Lógica para Ingresar Usuarios (Vuelve a la funcionalidad original)
+        // Lógica para Ingresar Usuarios -> Redirige a Registro.kt
         btnIngresarUsuario.setOnClickListener {
             val intentRegistro = Intent(this, Registro::class.java)
             startActivity(intentRegistro)
         }
 
-        // Lógica para Listar Usuarios
+        // Lógica para Listar Usuarios -> Redirige a Listado.kt
         btnListarUsuarios.setOnClickListener {
             val intentListado = Intent(this, Listado::class.java)
             startActivity(intentListado)
+        }
+
+        // Lógica para Registrar Departamento (NUEVA FUNCIÓN ADMIN)
+        btnRegistrarDepartamento.setOnClickListener {
+            val intentDepto = Intent(this, RegistroDepartamento::class.java)
+            startActivity(intentDepto)
         }
     }
 }

@@ -24,23 +24,16 @@ private lateinit var txtClave: EditText
 private lateinit var btnIngresar: Button
 private lateinit var btnRegistrarse: Button
 private lateinit var btnRecuperar: Button
-private lateinit var datos: RequestQueue // NECESARIO PARA VOLLEY/AWS
+private lateinit var datos: RequestQueue
 
 class MainActivity : AppCompatActivity() {
 
-    // Constantes para SharedPreferences
+    // Constantes para SharedPreferences (ampliadas)
     private val LOGGED_IN_NAME = "LOGGED_IN_NAME"
     private val LOGGED_IN_EMAIL = "LOGGED_IN_EMAIL"
     private val IS_LOGGED_IN = "IS_LOGGED_IN"
-
-    private fun mostrarAdvertencia(title: String, content: String) {
-        SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE)
-            .setTitleText(title)
-            .setContentText(content)
-            .setConfirmText("Aceptar")
-            .setConfirmClickListener { dialog -> dialog.dismissWithAnimation() }
-            .show()
-    }
+    private val LOGGED_IN_ROL = "LOGGED_IN_ROL"
+    private val LOGGED_IN_ID_DEPARTAMENTO = "LOGGED_IN_ID_DEPARTAMENTO"
 
     private fun mostrarError(title: String, content: String) {
         SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
@@ -79,7 +72,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        datos = Volley.newRequestQueue(this) // Inicializar Volley RequestQueue
+        datos = Volley.newRequestQueue(this)
 
         // 1. Enlazar Vistas
         txtEmail = findViewById(R.id.editTextTextEmailAddress2)
@@ -93,13 +86,12 @@ class MainActivity : AppCompatActivity() {
             val emailText = txtEmail.text.toString().trim()
             val claveText = txtClave.text.toString().trim()
 
-            // Validación de campos
             if (emailText.isBlank() || claveText.isBlank()) {
-                mostrarAdvertencia("Campos Obligatorios", "Por favor, ingrese su email y contraseña.")
+                mostrarError("Campos Obligatorios", "Por favor, ingrese su email y contraseña.")
             } else if (!isValidEmail(emailText)) {
-                mostrarAdvertencia("Formato Inválido", "El formato del email no es correcto.")
+                mostrarError("Formato Inválido", "El formato del email no es correcto.")
             } else {
-                checkCredentialsAWS(emailText.toLowerCase(), claveText) // Llama a la autenticación AWS
+                checkCredentialsAWS(emailText.toLowerCase(), claveText)
             }
         }
 
@@ -116,31 +108,46 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // FUNCIÓN FINAL: Autenticación contra AWS API (login.php)
+    // FUNCIÓN FINAL: Implementa la validación de estado y lectura robusta
     private fun checkCredentialsAWS(email: String, clave: String) {
 
-        // **REEMPLAZAR** ESTA URL CON TU ENDPOINT REAL DE AWS
+        // CORRECCIÓN CRÍTICA DE LA URL: Apunta al endpoint de login.php en AWS
         val url = "http://107.20.82.249/api/login.php?email=$email&clave=$clave"
 
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.GET, url, null,
             { response ->
                 try {
-                    val estado = response.getString("estado")
+                    val estado = response.optString("estado", "0")
 
                     if (estado == "1") {
-                        // LOGIN EXITOSO: Leer datos y guardar en SharedPreferences
-                        val nombre = response.getString("nombre")
-                        val apellido = response.getString("apellido")
-                        val userEmail = response.getString("email")
+                        // **VALIDACIÓN CRÍTICA DEL ESTADO DEL USUARIO**
+                        val userStatus = response.optString("estado", "INACTIVO") // Lee la columna 'estado' de la BD
+
+                        if (userStatus == "INACTIVO" || userStatus == "BLOQUEADO") {
+                            // Punto 8: Usuarios desactivados no deben permitir el funcionamiento
+                            mostrarError("Acceso Denegado", "Su cuenta se encuentra inactiva o bloqueada.")
+                            return@JsonObjectRequest
+                        }
+
+                        // LOGIN EXITOSO: Lectura Robusta de datos de sesión
+                        val nombre = response.optString("nombre", "")
+                        val apellido = response.optString("apellido", "")
+                        val userEmail = response.optString("email", "")
+
+                        val rol = response.optString("rol", "OPERADOR")
+                        val idDepartamentoRaw = response.optString("id_departamento", "0")
+                        val idDepartamento = idDepartamentoRaw.toIntOrNull() ?: 0
 
                         val sharedPref = getSharedPreferences("UserSession", Context.MODE_PRIVATE)
                         with (sharedPref.edit()) {
-                            // Guardamos el nombre completo y el email
                             putString(LOGGED_IN_NAME, "$nombre $apellido")
                             putString(LOGGED_IN_EMAIL, userEmail)
                             putBoolean(IS_LOGGED_IN, true)
-                            // Se asume que la API de login.php devuelve el ROL
+
+                            putString(LOGGED_IN_ROL, rol)
+                            putInt(LOGGED_IN_ID_DEPARTAMENTO, idDepartamento)
+
                             apply()
                         }
 
@@ -149,11 +156,11 @@ class MainActivity : AppCompatActivity() {
                         mostrarError("Error de Acceso", "Credenciales inválidas. Usuario no encontrado o contraseña incorrecta.")
                     }
                 } catch (e: JSONException) {
-                    mostrarError("Error de Servidor", "No se pudo procesar la respuesta JSON del servidor.")
+                    mostrarError("Error de Servidor", "No se pudo procesar la respuesta JSON: ${e.message}.")
                 }
             },
             { error ->
-                mostrarError("Error de Conexión", "No se pudo conectar a la API de autenticación. Error: ${error.message}")
+                mostrarError("Error de Conexión", "No se pudo conectar a la API de autenticación. Verifique la conexión a AWS.")
             }
         )
         datos.add(jsonObjectRequest)
